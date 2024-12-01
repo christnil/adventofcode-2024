@@ -10,12 +10,11 @@ module AoCIO
   )
 where
 
-import Data.Char (isDigit)
 import Data.List.Split (splitOn)
 
 -- | Reads the entire input from a given file.
 readInput :: FilePath -> IO String
-readInput path = readFile path
+readInput = readFile
 
 -- | Parses the input into a list of lines.
 parseLines :: String -> [String]
