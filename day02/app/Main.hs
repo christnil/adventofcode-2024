@@ -2,19 +2,16 @@ import AoCIO
 import Log
 
 allDiffsInRange :: (Int, Int) -> [Int] -> Bool
-allDiffsInRange (from, to) l =
-  let tuples = zip l $ tail l
-      diffs = map (\(a, b) -> b - a) tuples
-   in all (\x -> x >= from && x <= to) diffs
+allDiffsInRange (from, to) l = all (\x -> x >= from && x <= to) diffs
+  where
+    diffs = zipWith (-) (tail l) l
 
--- | Reduces a list of integers to a map of integers and their counts
 safeRow :: [Int] -> Bool
 safeRow x = allDiffsInRange (-3, -1) x || allDiffsInRange (1, 3) x
 
 safeRowWithRemoval :: [Int] -> Bool
 safeRowWithRemoval xs = any safeRow (removeOne xs)
 
--- Helper function to generate all sublists by removing one element
 removeOne :: [a] -> [[a]]
 removeOne [] = []
 removeOne (x : xs) = xs : map (x :) (removeOne xs)
