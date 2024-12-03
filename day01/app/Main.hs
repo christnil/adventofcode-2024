@@ -1,7 +1,7 @@
 import AoCIO
-import Log
 import Data.List (sort)
 import qualified Data.Map as Map
+import Log
 
 -- | Reduces a list of integers to a map of integers and their counts
 frequencies :: [Int] -> Map.Map Int Int
@@ -17,16 +17,10 @@ main = do
   verbosePrint "Right column"
   verbosePrint r
 
-  let zipped = zip (sort l) (sort r)
-  
-  verbosePrint "Zipped:"
-  verbosePrint zipped
-
-  let distances = map (\(a, b) -> abs (b - a)) zipped
-  
+  let distances = zipWith (\a b -> abs (b - a)) (sort l) (sort r)
   verbosePrint "Distances:"
   verbosePrint distances
-  
+
   let s = sum distances
 
   print ("Part 1: " ++ show s)
