@@ -1,2 +1,70 @@
 **/dist-newstyle/*
+**/input.txt
+
+
+dist/
+dist-newstyle/
+cabal.sandbox.config
+cabal.sandbox/
+.cabal-sandbox/
+*.prof
+*.eventlog
+*.hi
+*.o
+*.dyn_o
+*.dyn_hi
+
+# Ignore Stack build artifacts
+.stack-work/
+.stack/
+stack.yaml.lock
+.stackdump
+
+# Ignore GHCi-specific files
+.ghci
+.ghc.environment.*
+
+# Ignore Hoogle database files
+.hoogle/
+
+# Ignore project-specific temporary files
+*.tix
+*.hp
+
+# Ignore IDE/editor-specific files
+/.idea/
+*.swp
+*.swo
+*~
+*.vscode/
+
+# Ignore temporary and backup files
+*.tmp
+*.bak
+*.orig
+*.old
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore binary executables (if built in the repo root)
+*.exe
+*.out
+*.bin
+*.dll
+*.dylib
+*.so
+*.a
+*.archive
+
+# Ignore subproject-specific build outputs
+**/dist/
+**/dist-newstyle/
+**/.stack-work/
+
+# Ignore logs and temporary files in all subdirectories
+**/*.log
+**/*.tmp
+**/*.tix
 
