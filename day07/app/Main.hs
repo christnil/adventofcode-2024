@@ -8,11 +8,17 @@ customReadInt s = case readInt s of
   Nothing -> error $ "Invalid integer: " ++ s
 
 parseEquation :: String -> (Int, [Int])
-parseEquation line = (target, reverse numbers)
+parseEquation line = (target, numbers)
   where
     parts = splitOn ": " line
     target = customReadInt (head parts)
     numbers = map customReadInt (splitOn " " (last parts))
+
+reverseNumbers :: (Int, [Int]) -> (Int, [Int])
+reverseNumbers (t, n) = (t, reverse n)
+
+concatInt :: Int -> Int -> Int
+concatInt a b = read (show a ++ show b)
 
 possibleEquation :: Int -> [Int] -> Bool
 possibleEquation target [] = target == 0
@@ -23,6 +29,16 @@ possibleEquation target numbers = addition || multiplication
     rest = tail numbers
     addition = possibleEquation (target - x) rest
     multiplication = x /= 0 && target `mod` x == 0 && possibleEquation (target `div` x) rest
+
+possibleEquation2 :: Int -> Int -> [Int] -> Bool
+possibleEquation2 target current [] = target == current
+possibleEquation2 target current numbers = addition || multiplication || concatenation
+  where
+    x = head numbers
+    rest = tail numbers
+    addition = possibleEquation2 target (current + x) rest
+    multiplication = possibleEquation2 target (current * x) rest
+    concatenation = current /= 0 && possibleEquation2 target (concatInt current x) rest
 
 main :: IO ()
 main = do
@@ -35,7 +51,7 @@ main = do
   verbosePrint "equations"
   verbosePrint equations
 
-  let validEquations = filter (uncurry possibleEquation) equations
+  let validEquations = filter (uncurry possibleEquation) $ map reverseNumbers equations
   verbosePrint "validEquations"
   verbosePrint validEquations
 
@@ -45,6 +61,12 @@ main = do
 
   print ("Part 1: " ++ show part1)
 
-  let part2 = 1
+  let validEquations2 = filter (\(t, n) -> possibleEquation2 t (head n) (tail n)) equations
+  verbosePrint "validEquations2"
+  verbosePrint validEquations2
+
+  let validTargets2 = map fst validEquations2
+
+  let part2 = sum validTargets2
 
   print ("Part 2: " ++ show part2)
