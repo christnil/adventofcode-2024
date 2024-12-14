@@ -134,15 +134,35 @@ const longestLine = (positions) => {
     return [longestRow, longestColumn];
 }
 
+const countsPer10x10Grid = (positions) => {
+    const counts = {};
+    positions.forEach(([x, y]) => {
+        const gridX = Math.floor(x / 10);
+        const gridY = Math.floor(y / 10);
+        if (!counts[gridY]) {
+            counts[gridY] = {};
+        }
+        if (!counts[gridY][gridX]) {
+            counts[gridY][gridX] = 0;
+        }
+        counts[gridY][gridX]++;
+    });
+    const flatCounts = Object.values(counts).reduce((acc, row) => {
+        return acc.concat(Object.values(row));
+    }, []);
+    logIfVerboseEnv('counts per 10x10 grid:', flatCounts);
+    return flatCounts;
+}
 
-let longestLines = 0;
+
+let busiestGrid = 0;
 for (let i = 0; i < xMax * yMax; i++) {
     const positions = initPositions.map((pos, j) => move(pos, velocities[j], i));
-    const longest = longestLine(positions).reduce((acc, val) => acc + val, 0);
-    if (longest > longestLines) {
-        console.log(`Step ${i} line length factor: ${longest}`);
+    const count = Math.max(...countsPer10x10Grid(positions));
+    if (count > busiestGrid) {
+        console.log(`Step ${i} line grid count: ${count}`);
         console.log(draw(positions, false));
-        longestLines = longest;
+        busiestGrid = count;
     }
 }
 
