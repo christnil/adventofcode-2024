@@ -69,23 +69,25 @@ rows.forEach((row, x) => {
 const parents = {};
 const djikstra = () => {
     let best = undefined;
+    let sinks = [];
     const queue = priorityQueue((a, b) => a[0] - b[0]);
     queue.enqueue([0, sourcePosition, sourceDirection, null]);
     while (!queue.isEmpty() && (!best || queue.peek()[0] <= best)) {
         const [distance, position, direction, parent] = queue.dequeue();
-        const key = toKey(position);
+        const key = toDirectionalKey(position, direction);
         if (parents[key]) {
             if (parents[key].cost === distance && parent) {
-                parents[key].parent.push(parent[0]);
+                parents[key].parent.push(toDirectionalKey(...parent));
             }
             continue;
         }
         parents[key] = {
             cost: distance,
-            parent: parent && [parent[0]],
+            parent: parent ? [toDirectionalKey(...parent)] : [],
         };
-        if (position[0] === sinkPosition[0] && position[1] === sinkPosition[1]) {
-            return best = distance;
+        if (position[0] === sinkPosition[0] && position[1] === sinkPosition[1] && (!best || distance < best)) {
+            best = distance;
+            sinks.push(key);
         }
         const nextParent = [position, direction];
         let nextPosition = [position[0] + direction[0], position[1] + direction[1]];
@@ -101,7 +103,7 @@ const djikstra = () => {
             }
         }
     }
-    return best;
+    return {best, sinks: [...new Set(sinks)]};
 };
 
 const getPath = () => {
@@ -118,19 +120,20 @@ const getPath = () => {
     return path;
 }
 
-const distance = djikstra();
+const { best, sinks } = djikstra();
 const part1 = () => {
     const path = getPath();
     logIfVerboseEnv(path);
-    console.log('Part1: ', distance);
+    console.log('Part1: ', best);
 };
 
-const getPathTiles = (pos) => {
-    let key = toKey(pos);
-    const { parent } = (parents[key] || {});
-    const tiles = [pos];
-    (parent || []).forEach(p => {
-        tiles.push(...getPathTiles(p));
+const getPathTiles = (keys) => {
+    const tiles = [];
+    (keys || []).forEach(k => {
+        const pos = k.split(',').slice(0, 2).map(Number);
+        tiles.push(pos);
+        const parentKeys = (parents[k] || {}).parent || [];
+        tiles.push(...getPathTiles(parentKeys));
     });
     return tiles;
 }
@@ -159,8 +162,7 @@ const drawMap = (visitedSet) => {
 }
 
 const part2 = () => {
-    const path = getPath();
-    const pathTiles = getPathTiles(sinkPosition);
+    const pathTiles = getPathTiles(sinks);
     const asKeys = pathTiles.map(p => toKey(p));
     const uniqueKeys = new Set(asKeys);
     drawMap(uniqueKeys);
