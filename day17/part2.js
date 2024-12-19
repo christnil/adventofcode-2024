@@ -1,5 +1,4 @@
 const fs = require('fs');
-const { parse, join } = require('path');
 
 const raw = fs.readFileSync('./input.txt', 'utf8')
 
